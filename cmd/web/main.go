@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+type Task struct {
+	Description string `json:"description"`
+	Completed   bool   `json:"completed"`
+}
+
+const taskFile = "task.json"
 
 func main() {
-	fmt.Println("Task Management")
+
 }
