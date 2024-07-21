@@ -98,3 +98,25 @@ func addTask() {
 	}
 	fmt.Println("Task added successfully.")
 }
+
+
+func viewTask(){
+	tasks, err := loadTasks()
+	if err != nil{
+		fmt.Printf("Error loading tasks: %v\n",err)
+		return
+	}
+
+	if len(tasks) == 0 {
+		fmt.Println("No tasks found.")
+		return
+	}
+
+	fmt.Printf("%-5s %-30s %s\n", "ID" , "Description", "Completed")
+	fmt.Println("-----------------------------------------------")
+	for i , task := range tasks{
+		fmt.Printf("%-5d %-30s %t\n",i+1,task.Description,task.Completed)
+	}
+}
+
+
