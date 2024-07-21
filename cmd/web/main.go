@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -48,10 +49,26 @@ func main() {
 
 }
 
+func loadTasks() ([]Task, error) {
+	if _, err := os.Stat(taskFile); os.IsNotExist(err) {
+		return []Task{}, nil
+	}
+
+	data, err := os.ReadFile(taskFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read tasks file from JSON: %w", err)
+	}
+	var task []Task
+	err = json.Unmarshal(data, task)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal tasks from JSON:%w", err)
+	}
+	return task, nil
+}
+
 func addTask() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter task description: ")
 	description, _ := reader.ReadString('\n')
 	description = strings.TrimSpace(description)
 }
-
