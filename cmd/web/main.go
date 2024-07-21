@@ -60,7 +60,7 @@ func loadTasks() ([]Task, error) {
 		return nil, fmt.Errorf("failed to read tasks file from JSON: %w", err)
 	}
 	var task []Task
-	err = json.Unmarshal(data, task)
+	err = json.Unmarshal(data,&task)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tasks from JSON: %w", err)
 	}
@@ -153,4 +153,39 @@ func deleteTask() {
 	}
 
 	fmt.Println("Task deleted successfully.")
+}
+
+
+func markTaskAsComplete(){
+	tasks, err := loadTasks()
+	if err != nil{
+		fmt.Printf("Error loading tasks: %v\n",err)
+		return
+	}
+
+	if len(tasks) == 0 {
+		fmt.Println("No tasks found")
+		return
+	}
+
+	viewTask()
+
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(input)
+
+	tasksNum, err := strconv.Atoi(input)
+	if err != nil || tasksNum < 1 || tasksNum > len(tasks){
+		fmt.Println("Invalid task number.")
+		return
+	}
+
+	tasks[tasksNum - 1].Completed = true
+	
+	if err = saveTasks(tasks); err != nil{
+		fmt.Printf("Error saving tasks: %v\n",err)
+		return
+	}
+
+
 }
