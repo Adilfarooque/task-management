@@ -61,9 +61,20 @@ func loadTasks() ([]Task, error) {
 	var task []Task
 	err = json.Unmarshal(data, task)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal tasks from JSON:%w", err)
+		return nil, fmt.Errorf("failed to unmarshal tasks from JSON: %w", err)
 	}
 	return task, nil
+}
+
+func saveTasks(tasks []Task) error {
+	data, err := json.Marshal(tasks)
+	if err != nil {
+		return fmt.Errorf("failed to marshal tasks to JSON: %w", err)
+	}
+	if err = os.WriteFile(taskFile, data, 0644); err != nil {
+		return fmt.Errorf("failed to write tasks to file: %w", err)
+	}
+	return nil
 }
 
 func addTask() {
@@ -71,4 +82,19 @@ func addTask() {
 	fmt.Print("Enter task description: ")
 	description, _ := reader.ReadString('\n')
 	description = strings.TrimSpace(description)
+
+	tasks, err := loadTasks()
+	if err != nil {
+		fmt.Printf("Error loading tasks: %v\n", err)
+		return
+	}
+
+	tasks = append(tasks, Task{Description: description,Completed: false})
+
+	err = saveTasks(tasks)
+	if err != nil {
+		fmt.Printf("Error saving tasks: %v\n", err)
+		return
+	}
+	fmt.Println("Task added successfully.")
 }
